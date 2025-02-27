@@ -14,61 +14,61 @@ const gameData = [
     id: 1,
     imageWithoutBall: "/0.jpg",
     ballPosition: { x: 320, y: 250 },
-    description: "Soccer match with players jumping for a header",
+    description: "Soccer match with players",
   },
   {
     id: 2,
     imageWithoutBall: "/2.jpg",
     ballPosition: { x: 600, y: 180 },
-    description: "Tennis player at the baseline preparing to return",
+    description: "Soccer match with players",
   },
   {
     id: 3,
     imageWithoutBall: "/3.jpg",
     ballPosition: { x: 400, y: 320 },
-    description: "Basketball game with players near the hoop",
+    description: "Soccer match with players",
   },
   {
     id: 4,
     imageWithoutBall: "/4.jpg",
     ballPosition: { x: 250, y: 150 },
-    description: "Golf player mid-swing on the fairway",
+    description: "Soccer match with players",
   },
   {
     id: 5,
     imageWithoutBall: "/5.jpg",
     ballPosition: { x: 500, y: 220 },
-    description: "Cricket batsman playing a shot",
+    description: "Soccer match with players",
   },
   {
     id: 6,
     imageWithoutBall: "/9.jpg",
     ballPosition: { x: 350, y: 280 },
-    description: "Volleyball players at the net",
+    description: "Soccer match with players",
   },
   {
     id: 7,
     imageWithoutBall: "/12.jpg",
     ballPosition: { x: 420, y: 190 },
-    description: "Baseball pitcher in mid-throw",
+    description: "Soccer match with players",
   },
   {
     id: 8,
     imageWithoutBall: "/13.jpg",
     ballPosition: { x: 280, y: 350 },
-    description: "Rugby players in a scrum",
+    description: "Soccer match with players",
   },
   {
     id: 9,
     imageWithoutBall: "/21.jpg",
     ballPosition: { x: 550, y: 270 },
-    description: "Table tennis player serving",
+    description: "Soccer match with players",
   },
   {
     id: 10,
     imageWithoutBall: "/24.jpg",
     ballPosition: { x: 380, y: 230 },
-    description: "Hockey players fighting for the puck",
+    description: "Soccer match with players",
   },
 ]
 
@@ -269,8 +269,9 @@ export default function SpotTheBallGame() {
           <p>
             Points earned this round: <span className="font-medium">{roundScore}</span>
           </p>
-          <Button className="mt-4" onClick={nextRound} rightIcon={<ArrowRight className="ml-2 h-4 w-4" />}>
+          <Button className="mt-4 flex items-center gap-2" onClick={nextRound}>
             {currentRound < gameData.length - 1 ? "Next Round" : "See Final Score"}
+            <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
       )}
