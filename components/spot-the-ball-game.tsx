@@ -280,12 +280,12 @@ export default function SpotTheBallGame() {
           )}
         </div>
 
-        {gameState === "playing" && (
+        {/* {gameState === "playing" && (
           <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-3 rounded-lg">
             <p className="text-sm font-medium">{currentGame.description}</p>
             <p className="text-xs text-muted-foreground mt-1">Click where you think the ball is</p>
           </div>
-        )}
+        )} */}
       </div>
 
       {gameState === "feedback" && (
