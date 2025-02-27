@@ -8,69 +8,91 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Trophy, ArrowRight, Target } from "lucide-react"
 
-// Game data with 10 rounds
-const gameData = [
-  {
-    id: 1,
-    imageWithoutBall: "/0.jpg",
-    ballPosition: { x: 320, y: 250 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 2,
-    imageWithoutBall: "/2.jpg",
-    ballPosition: { x: 600, y: 180 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 3,
-    imageWithoutBall: "/3.jpg",
-    ballPosition: { x: 400, y: 320 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 4,
-    imageWithoutBall: "/4.jpg",
-    ballPosition: { x: 250, y: 150 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 5,
-    imageWithoutBall: "/5.jpg",
-    ballPosition: { x: 500, y: 220 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 6,
-    imageWithoutBall: "/9.jpg",
-    ballPosition: { x: 350, y: 280 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 7,
-    imageWithoutBall: "/12.jpg",
-    ballPosition: { x: 420, y: 190 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 8,
-    imageWithoutBall: "/13.jpg",
-    ballPosition: { x: 280, y: 350 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 9,
-    imageWithoutBall: "/21.jpg",
-    ballPosition: { x: 550, y: 270 },
-    description: "Soccer match with players",
-  },
-  {
-    id: 10,
-    imageWithoutBall: "/24.jpg",
-    ballPosition: { x: 380, y: 230 },
-    description: "Soccer match with players",
-  },
-]
+// First, define the interface for our ball position data
+interface BallPosition {
+  id: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+// Create a map of all ball positions using the data from your key
+const ballPositions: { [key: string]: BallPosition } = {
+  "0": { id: 0, x: 380.0, y: 227.109375, width: 20, height: 35 },
+  "2": { id: 2, x: 213.75, y: 236.953125, width: 14, height: 25 },
+  "3": { id: 3, x: 330.0, y: 243.984375, width: 24, height: 40 },
+  "4": { id: 4, x: 288.75, y: 319.21875, width: 28, height: 47 },
+  "5": { id: 5, x: 163.75, y: 315.0, width: 31, height: 57 },
+  "9": { id: 9, x: 242.5, y: 92.8125, width: 20, height: 32 },
+  "12": { id: 12, x: 367.5, y: 225.703125, width: 23, height: 34 },
+  "13": { id: 13, x: 236.25, y: 229.921875, width: 23, height: 34 },
+  "21": { id: 21, x: 358.75, y: 196.875, width: 23, height: 41 },
+  "24": { id: 24, x: 402.5, y: 316.40625, width: 26, height: 37 },
+  "28": { id: 28, x: 387.5, y: 234.140625, width: 23, height: 36 },
+  "30": { id: 30, x: 280.0, y: 161.71875, width: 23, height: 37 },
+  "31": { id: 31, x: 306.25, y: 249.609375, width: 28, height: 44 },
+  "32": { id: 32, x: 522.5, y: 305.859375, width: 27, height: 45 },
+  "36": { id: 36, x: 163.75, y: 300.9375, width: 15, height: 22 },
+  "39": { id: 39, x: 400.0, y: 253.828125, width: 22, height: 38 },
+  "44": { id: 44, x: 260.0, y: 243.984375, width: 20, height: 41 },
+  "45": { id: 45, x: 180.0, y: 236.25, width: 7, height: 10 },
+  "46": { id: 46, x: 153.75, y: 287.578125, width: 33, height: 52 },
+  "53": { id: 53, x: 425.0, y: 236.953125, width: 7, height: 9 },
+  "56": { id: 56, x: 47.5, y: 199.6875, width: 10, height: 14 },
+  "62": { id: 62, x: 386.25, y: 189.84375, width: 8, height: 12 },
+  "66": { id: 66, x: 395.0, y: 220.078125, width: 11, height: 21 },
+  "71": { id: 71, x: 160.0, y: 303.75, width: 31, height: 50 },
+  "73": { id: 73, x: 171.25, y: 277.03125, width: 19, height: 31 },
+  "75": { id: 75, x: 265.0, y: 308.671875, width: 20, height: 33 },
+  "78": { id: 78, x: 317.5, y: 142.03125, width: 15, height: 27 },
+  "79": { id: 79, x: 152.5, y: 252.421875, width: 4, height: 6 },
+  "94": { id: 94, x: 326.25, y: 135.703125, width: 19, height: 33 },
+  "154": { id: 154, x: 353.75, y: 251.71875, width: 22, height: 31 },
+  "163": { id: 163, x: 130.0, y: 191.25, width: 27, height: 44 },
+  "190": { id: 190, x: 302.5, y: 287.578125, width: 32, height: 57 },
+  "212": { id: 212, x: 470.0, y: 136.40625, width: 11, height: 17 },
+  "217": { id: 217, x: 391.25, y: 289.6875, width: 23, height: 39 },
+  "222": { id: 222, x: 385.0, y: 237.65625, width: 18, height: 31 },
+  "223": { id: 223, x: 340.0, y: 115.3125, width: 14, height: 23 },
+  "224": { id: 224, x: 212.5, y: 81.5625, width: 12, height: 16 },
+  "226": { id: 226, x: 323.75, y: 271.40625, width: 28, height: 51 },
+  "230": { id: 230, x: 300.0, y: 279.140625, width: 26, height: 42 },
+  "245": { id: 245, x: 426.25, y: 286.875, width: 31, height: 55 },
+  "250": { id: 250, x: 276.25, y: 88.59375, width: 18, height: 30 },
+  "277": { id: 277, x: 246.25, y: 288.984375, width: 25, height: 38 },
+  "291": { id: 291, x: 412.5, y: 252.421875, width: 22, height: 40 },
+  "302": { id: 302, x: 253.75, y: 267.1875, width: 25, height: 43 },
+  "303": { id: 303, x: 493.75, y: 263.671875, width: 15, height: 25 },
+  "309": { id: 309, x: 210.0, y: 279.140625, width: 25, height: 44 },
+  "312": { id: 312, x: 327.5, y: 106.875, width: 12, height: 17 },
+  "347": { id: 347, x: 316.25, y: 291.796875, width: 25, height: 43 },
+  "354": { id: 354, x: 338.75, y: 282.65625, width: 24, height: 45 },
+  "371": { id: 371, x: 210.0, y: 227.109375, width: 21, height: 38 },
+  "389": { id: 389, x: 395.0, y: 208.125, width: 7, height: 12 },
+  "464": { id: 464, x: 472.5, y: 278.4375, width: 26, height: 43 }
+};
+
+// Function to get random images
+function getRandomImages() {
+  const imageIds = Object.keys(ballPositions);
+  const shuffled = [...imageIds].sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 10);
+  
+  return selected.map((id, index) => ({
+    id: index + 1,
+    imageWithoutBall: `/${id}.jpg`,
+    ballPosition: {
+      x: ballPositions[id].x,
+      y: ballPositions[id].y
+    },
+    description: "Spot the ball in this soccer scene"
+  }));
+}
+
+// Add these constants for clarity
+const IMAGE_WIDTH = 640;
+const IMAGE_HEIGHT = 360;
 
 // Calculate distance between two points
 const calculateDistance = (x1: number, y1: number, x2: number, y2: number) => {
@@ -79,9 +101,8 @@ const calculateDistance = (x1: number, y1: number, x2: number, y2: number) => {
 
 // Calculate score based on distance (max 100 points per round)
 const calculateScore = (distance: number) => {
-  // Max distance possible is roughly the diagonal of the image (sqrt(800^2 + 500^2) ≈ 943)
-  // We'll use 500 as a reasonable max distance for scoring
-  const maxDistance = 500
+  // Max distance based on 640x360 image diagonal
+  const maxDistance = Math.sqrt(IMAGE_WIDTH * IMAGE_WIDTH + IMAGE_HEIGHT * IMAGE_HEIGHT) / 2
   const score = Math.max(0, 100 - Math.round((distance / maxDistance) * 100))
   return score
 }
@@ -94,6 +115,7 @@ export default function SpotTheBallGame() {
   const [roundScore, setRoundScore] = useState(0)
   const [distance, setDistance] = useState(0)
   const imageRef = useRef<HTMLDivElement>(null)
+  const [gameData, setGameData] = useState(() => getRandomImages())
 
   const currentGame = gameData[currentRound]
   const progress = (currentRound / gameData.length) * 100
@@ -135,6 +157,7 @@ export default function SpotTheBallGame() {
   }
 
   const restartGame = () => {
+    setGameData(getRandomImages())
     setCurrentRound(0)
     setTotalScore(0)
     setUserGuess(null)
@@ -207,13 +230,18 @@ export default function SpotTheBallGame() {
 
       <Progress value={progress} className="h-2" />
 
-      <div className="mt-4 relative bg-muted rounded-lg overflow-hidden">
-        <div ref={imageRef} className="relative w-full h-[500px] cursor-crosshair" onClick={handleImageClick}>
+      <div className="mt-4 relative bg-muted rounded-lg overflow-hidden flex justify-center">
+        <div 
+          ref={imageRef} 
+          className="relative w-[640px] h-[360px] cursor-crosshair bg-slate-200" 
+          onClick={handleImageClick}
+        >
           <Image
-            src={currentGame.imageWithoutBall || "/placeholder.svg"}
+            src={currentGame.imageWithoutBall}
             alt={currentGame.description}
             fill
-            className="object-cover"
+            className="object-contain"
+            priority
           />
 
           {gameState === "feedback" && userGuess && (
