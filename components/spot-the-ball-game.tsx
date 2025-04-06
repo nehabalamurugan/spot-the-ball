@@ -177,7 +177,7 @@ export default function SpotTheBallGame() {
       setCurrentRound((prev) => prev + 1)
       setUserGuess(null)
       if ((currentRound + 1) % 5 === 0) {
-        setGameState("research-feedback")
+        setGameState("playing")
       } else {
         setGameState("playing")
       }

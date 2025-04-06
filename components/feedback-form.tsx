@@ -18,8 +18,8 @@ export function FeedbackForm({ onSubmit, currentRound, totalScore, totalRounds, 
   const [error, setError] = useState("")
 
   const handleSubmit = () => {
-    if (feedback.length < 100) {
-      setError("Please provide at least 100 characters of feedback")
+    if (feedback.length < 50) {
+      setError("Please provide at least 50 characters of feedback")
       return
     }
     onSubmit(feedback)
@@ -59,7 +59,7 @@ export function FeedbackForm({ onSubmit, currentRound, totalScore, totalRounds, 
       />
       <div className="flex justify-between items-center">
         <p className="text-sm text-muted-foreground">
-          Characters: {feedback.length}/100 (minimum)
+          Characters: {feedback.length}/50 (minimum)
         </p>
         {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
