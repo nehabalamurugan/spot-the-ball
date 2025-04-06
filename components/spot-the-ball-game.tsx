@@ -2,11 +2,12 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Trophy, ArrowRight, Target } from "lucide-react"
+import { FeedbackForm } from "@/components/feedback-form"
 
 // First, define the interface for our ball position data
 interface BallPosition {
@@ -101,7 +102,6 @@ const calculateDistance = (x1: number, y1: number, x2: number, y2: number) => {
 
 // Calculate score based on distance (max 100 points per round)
 const calculateScore = (distance: number) => {
-  // Max distance based on 640x360 image diagonal
   const maxDistance = Math.sqrt(IMAGE_WIDTH * IMAGE_WIDTH + IMAGE_HEIGHT * IMAGE_HEIGHT) / 2
   const score = Math.max(0, 100 - Math.round((distance / maxDistance) * 100))
   return score
@@ -109,18 +109,22 @@ const calculateScore = (distance: number) => {
 
 export default function SpotTheBallGame() {
   const [currentRound, setCurrentRound] = useState(0)
-  const [gameState, setGameState] = useState<"intro" | "playing" | "feedback" | "completed">("intro")
+  const [gameState, setGameState] = useState<"intro" | "playing" | "feedback" | "research-feedback" | "final-feedback" | "completed">("intro")
   const [userGuess, setUserGuess] = useState<{ x: number; y: number } | null>(null)
   const [totalScore, setTotalScore] = useState(0)
   const [roundScore, setRoundScore] = useState(0)
   const [distance, setDistance] = useState(0)
   const imageRef = useRef<HTMLDivElement>(null)
   const [gameData, setGameData] = useState(() => getRandomImages())
+  const [userId] = useState(() => {
+    // Generate a random user ID for this session
+    return Math.random().toString(36).substring(2, 15)
+  });
 
   const currentGame = gameData[currentRound]
   const progress = (currentRound / gameData.length) * 100
 
-  const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleImageClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     if (gameState !== "playing" || !imageRef.current) return
 
     const rect = imageRef.current.getBoundingClientRect()
@@ -138,6 +142,28 @@ export default function SpotTheBallGame() {
     setRoundScore(score)
     setTotalScore((prev) => prev + score)
     setGameState("feedback")
+
+    // Save click data to database
+    try {
+      await fetch('/api/clicks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          imageId: currentGame.imageWithoutBall.replace('/', '').replace('.jpg', ''),
+          userId: userId,
+          clickX: x,
+          clickY: y,
+          actualX: ballPos.x,
+          actualY: ballPos.y,
+          score: score,
+          distance: clickDistance,
+        })
+      })
+    } catch (error) {
+      console.error('Failed to save click data:', error)
+    }
   }
 
   const startGame = () => {
@@ -150,9 +176,13 @@ export default function SpotTheBallGame() {
     if (currentRound < gameData.length - 1) {
       setCurrentRound((prev) => prev + 1)
       setUserGuess(null)
-      setGameState("playing")
+      if ((currentRound + 1) % 5 === 0) {
+        setGameState("research-feedback")
+      } else {
+        setGameState("playing")
+      }
     } else {
-      setGameState("completed")
+      setGameState("final-feedback")
     }
   }
 
@@ -171,6 +201,47 @@ export default function SpotTheBallGame() {
     if (distance < 100) return "Good job! Pretty close!"
     if (distance < 200) return "Not bad! Getting there!"
     return "Keep trying! You'll get better!"
+  }
+
+  // Add function to handle feedback submission
+  const handleFeedbackSubmit = async (feedback: string) => {
+    try {
+      await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          roundNumber: currentRound + 1,
+          feedback: feedback
+        })
+      })
+      setGameState("playing")
+    } catch (error) {
+      console.error('Failed to save feedback:', error)
+    }
+  }
+
+  // Add final feedback handler
+  const handleFinalFeedback = async (feedback: string) => {
+    try {
+      await fetch('/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          roundNumber: currentRound + 1,
+          feedback: feedback,
+          isFinal: true
+        })
+      })
+      setGameState("completed")
+    } catch (error) {
+      console.error('Failed to save feedback:', error)
+    }
   }
 
   if (gameState === "intro") {
@@ -217,6 +288,33 @@ export default function SpotTheBallGame() {
     )
   }
 
+  if (gameState === "research-feedback") {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <FeedbackForm 
+          onSubmit={handleFeedbackSubmit}
+          currentRound={currentRound + 1}
+          totalScore={totalScore}
+          totalRounds={gameData.length}
+        />
+      </div>
+    )
+  }
+
+  if (gameState === "final-feedback") {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <FeedbackForm 
+          onSubmit={handleFinalFeedback}
+          currentRound={currentRound + 1}
+          totalScore={totalScore}
+          totalRounds={gameData.length}
+          isFinal={true}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex justify-between items-center">
@@ -244,6 +342,22 @@ export default function SpotTheBallGame() {
             priority
           />
 
+          {/* Debug coordinates display
+          <div className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm p-3 rounded-lg space-y-2 z-20">
+            <p className="text-xs">
+              Image: {currentGame.imageWithoutBall}
+            </p>
+            <p className="text-xs">
+              Ball: ({Math.round(currentGame.ballPosition.x)}, {Math.round(currentGame.ballPosition.y)})
+            </p>
+            {userGuess && (
+              <p className="text-xs">
+                Click: ({Math.round(userGuess.x)}, {Math.round(userGuess.y)})
+              </p>
+            )}
+          </div> */}
+
+          {/* Rest of the markers code */}
           {gameState === "feedback" && userGuess && (
             <>
               {/* User's guess */}
